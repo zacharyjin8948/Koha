@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Koha Library System</title>
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<link href="style.css" rel="stylesheet">
+	<script type="text/javascript" >
+		let sum = 0;
+		function priceChange(data) {
+			alert("Change quantity to: "+data.value);
+			sum += 40*(data.value-data.oldValue);
+
+			let span = document.getElementById('sub-total');
+			if(sum<0)
+				sum = 0;
+			span.textContent = "$"+sum.toString();
+
+			let spanTax = document.getElementById('tax');
+			spanTax.textContent = "$"+sum*0.05.toString();
+
+			let spanTotal = document.getElementById('total');
+			spanTotal.textContent = "$"+(sum*1.05+15).toString();
+		}
+		function erase(id){
+			let bookId = document.getElementById('book'+id);
+			let oldValue = bookId.value;
+			bookId.value = 0;
+			sum -= 40*oldValue;
+
+			let span = document.getElementById('sub-total');
+			if(sum<0)
+				sum = 0;
+			span.textContent = "$"+sum.toString();
+
+			let spanTax = document.getElementById('tax');
+			spanTax.textContent = "$"+sum*0.05.toString();
+
+			let spanTotal = document.getElementById('total');
+			spanTotal.textContent = "$"+(sum*1.05+15).toString();
+
+		}
+	</script>
+</head>
+<body>
+    <div class="wrapper">
+		<div id="logo">
+			<img src="https://koha-community.org/files/2013/09/cropped-kohabanner3.jpg" width="300" height="100">
+			<h1 style="color:white">Koha Library System -- Test Version</h1>
+			<nav class="main-nav">
+				<div id="responsive_current_menu_item" style="display: none">Home</div>
+				<ul class="menu" style="display: block">
+					<li class="homepage">
+						<a href="https://koha-community.org/">Home</a>
+					</li>
+					<li class="Cart">
+						<a href="#">Cart</a>
+					</li>
+					<li class="About">
+						<a href="#">About</a>
+					</li>
+					<li class="Login">
+						<a href="#">Login</a>
+					</li>
+
+				</ul><a id="responsive_menu_button"></a>
+			</nav>
+		</div>
+		<br>
+		<div class="container-inline">
+			<div class="form-item">
+				<label for="edit-keys"></label>
+				<input type="text" id="edit-keys" name="keys" placeholder="Enter Keyword" size="40" maxlength="255" class="form-text">
+			</div>
+			<br>
+			<input type="submit" id="edit-submit" name="op" value="Search" class="form-submit">
+		</div>
+		<br>
+		<div class="project">
+			<div class="shop" id="shop">
+				<script type="text/javascript">
+					fetch('data.json')
+							.then(function (response) {
+								return response.json();
+							})
+							.then(function (data) {
+								appendData(data);
+							})
+							.catch(function (err) {
+								console.log('error: ' + err);
+							});
+
+					function appendData(data) {
+						let mainContainer = document.getElementById("shop");
+						for (let i = 0; i < data.length; i++) {
+							let div = document.createElement("div");
+							div.className = "box";
+							div.innerHTML = '<img src="book.jpg">\n' +
+									'<div class="content">\n' +
+									'<h3>'+data[i].title+'</h3>\n' +
+									'<h4>Author: '+ data[i].author+'</h4>\n' +
+									// '<h4>ISBN: '+ data[i].isbn+'</h4>\n' +
+									'<p class="unit">Quantity: <input id="book'+i+'" name="" value="0" onfocus="this.oldValue = this.value;" onchange="priceChange(this)"></p>\n' +
+									'<p class="btn-area"><i aria-hidden="true" class="trash"></i> <span class="btn2" id="'+i+'" onclick="erase(this.id)">Remove</span></p>\n' +
+									'</div>';
+							mainContainer.appendChild(div);
+						}
+					}
+				</script>
+			</div>
+			<div class="right-bar">
+				<p><span>Subtotal</span> <span id="sub-total">$0</span></p>
+				<hr>
+				<p><span>Tax (5%)</span> <span id="tax">$0</span></p>
+				<hr>
+				<p><span>Shipping</span> <span>$15</span></p>
+				<hr>
+				<p><span>Total</span> <span id="total">$</span></p>
+				<a href="#"><i class="shopping-cart"></i>Checkout</a>
+			</div>
+		</div>
+
+	</div>
+</body>
+</html>
